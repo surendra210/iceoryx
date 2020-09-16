@@ -124,10 +124,11 @@ template <typename channel_t, typename gateway_t>
 iox::cxx::expected<channel_t, iox::gw::GatewayError>
 Iceoryx2ethGateway<channel_t, gateway_t>::setupChannel(const iox::capro::ServiceDescription& service) noexcept
 {
-    return this->addChannel(service).and_then([](channel_t channel) {
+    return this->addChannel(service).and_then([&service](channel_t channel) {
         auto subscriber = channel.getIceoryxTerminal();
         auto dataWriter = channel.getExternalTerminal();
         subscriber->subscribe(SUBSCRIBER_CACHE_SIZE);
+        dataWriter->setUniqueCode(service);
         dataWriter->connect();
 
         std::cout <<"Address of getExternalTerminal" << &dataWriter << std::endl;
