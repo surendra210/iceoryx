@@ -50,7 +50,7 @@ void sending()
         sample->doubleValue = ct* (-21.0);
         sample->integer = ct;
         sample->floating_pt = ct * 5.28;
-        strcpy(sample->word, "CSK MI KKR SRH RCB");
+        strcpy(sample->word, "This is a sample string");
 
 
         std::cout << "Sending: " << sample->doubleValue << " : " << sample->integer << " : " << sample->floating_pt << " : "

@@ -46,10 +46,24 @@ iox::eth::ethDataWriter::~ethDataWriter()
 
 }
 
+uint8_t iox::eth::ethDataWriter::setUniqueCode(const iox::capro::ServiceDescription& service){
+
+    uint8_t ret = 1u;
+    for(uint8_t idx = 0u; idx < pMap.size(); ++idx){
+        if(service == pMap[idx].m_serviceDescription){
+            unique_code = pMap[idx].unique_id;
+            ret = 0; //success - found
+            break;
+        }
+    }
+    if(ret == 1)
+        std::cout << "Unknown service!" << std::endl;
+    return ret;
+}
+
 void iox::eth::ethDataWriter::connect() noexcept
 {
    std::cout << "Testing the connect" << std::endl ;  
-   unique_code = 0;
 }
 
 void iox::eth::ethDataWriter::write(const uint8_t* const bytes, const uint64_t size) noexcept

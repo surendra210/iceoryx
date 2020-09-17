@@ -16,6 +16,7 @@
 #define IOX_eth_eth_CYCLONE_DATA_WRITER_HPP
 
 #include "eth/data_writer.hpp"
+#include "iceoryx_eth/eth/eth_gatewayconf.hpp"
 
 #include "eth/eth_context.hpp"
 #include "internal/log/logging.hpp"
@@ -45,7 +46,7 @@ class ethDataWriter : public iox::eth::DataWriter
     ethDataWriter(const IdString serviceId, const IdString instanceId, const IdString eventId);
     virtual ~ethDataWriter();
     ethDataWriter(const ethDataWriter&) = delete;
-
+    uint8_t setUniqueCode(const iox::capro::ServiceDescription&);
     void connect() noexcept override;
     void write(const uint8_t* const bytes, const uint64_t size) noexcept override;
     IdString getServiceId() const noexcept override;
