@@ -55,7 +55,7 @@ void iox::eth::ethDataWriter::connect() noexcept
 void iox::eth::ethDataWriter::write(const uint8_t* const bytes, const uint64_t size) noexcept
 {
 
-    std::cout << "Testing the write" << std::endl ;  
+    std::cout << "Testing the write Byte Address Received" <<bytes << "Size received"<< size << std::endl ;  
     
     client_handle = socket(AF_INET, SOCK_STREAM, 0);
     if(client_handle < 0){
@@ -96,14 +96,10 @@ void iox::eth::ethDataWriter::write(const uint8_t* const bytes, const uint64_t s
 
         uint8_t size_array[sizeof(size)/sizeof(uint8_t)];
         (void) memcpy(size_array, &size, sizeof(size));
-
-        for(uint8_t k = 0u; k < sizeof(size_array); ++k){
-            gatewayWrapper.push_back(size_array[k]);
-        }
-
-        for(uint8_t k = 0u; k < size; ++k){
-            gatewayWrapper.push_back(*(bytes + k));
-        }
+        //Size of Publish Data
+        gatewayWrapper.insert(gatewayWrapper.end(),&size_array[0],&size_array[sizeof(size_array)]);
+        //payload 
+        gatewayWrapper.insert(gatewayWrapper.end(),bytes,(bytes+size));
         printf("Size : %d, Data : ",gatewayWrapper.size());
         for(auto v : gatewayWrapper){
             printf("%u, ",v);
