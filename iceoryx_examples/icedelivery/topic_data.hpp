@@ -19,4 +19,12 @@ struct CounterTopic
     uint32_t counter;
 };
 
+struct  PoshPub1{
+
+    double doubleValue;
+    uint32_t integer;
+    float floating_pt;
+    char word[30];
+};//__attribute__((__packed__));
+
 #endif // IOX_EXAMPLES_ICEDELIVERY_TOPIC_DATA_HPP
