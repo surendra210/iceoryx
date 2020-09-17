@@ -113,7 +113,9 @@ void iox::eth::ethDataWriter::write(const uint8_t* const bytes, const uint64_t s
         //Size of Publish Data
         gatewayWrapper.insert(gatewayWrapper.end(),&size_array[0],&size_array[sizeof(size_array)]);
         //payload 
-        gatewayWrapper.insert(gatewayWrapper.end(),bytes,(bytes+size));
+//        gatewayWrapper.insert(gatewayWrapper.end(),bytes,(bytes+size));
+
+
         printf("Size : %d, Data : ",gatewayWrapper.size());
         for(auto v : gatewayWrapper){
             printf("%u, ",v);
@@ -140,6 +142,12 @@ void iox::eth::ethDataWriter::write(const uint8_t* const bytes, const uint64_t s
             // else{
             //     std::cout << "Send failure!!" << std::endl;
             // } 
+        }
+        else{
+            std::cout << "Send data failed!" << std::endl;
+        }
+        if(-1 != send(client_handle, bytes,size, 0 )){
+         
         }
         else{
             std::cout << "Send data failed!" << std::endl;
