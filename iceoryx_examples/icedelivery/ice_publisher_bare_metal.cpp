@@ -27,6 +27,8 @@ static void sigHandler(int f_sig[[gnu::unused]])
     // caught SIGINT, now exit gracefully
     killswitch = true;
 }
+uint16_t delay_factor{1000};
+uint16_t delay_factor2{100};
 
 void sending()
 {
@@ -40,11 +42,13 @@ void sending()
     myPublisher.offer();
 
     uint32_t ct = 0;
-
+        
     while (!killswitch)
     {
         // Allocate a memory chunk for the sample to be sent
         auto sample = static_cast<PoshPub1*>(myPublisher.allocateChunk(sizeof(PoshPub1)));
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(delay_factor));
 
         // Write sample data
         sample->doubleValue = ct* (-21.0);
@@ -58,20 +62,28 @@ void sending()
 
         // Send the sample
         myPublisher.sendChunk(sample);
-
+        delay_factor = delay_factor2;
         ct++;
 
-        // Sleep some time to avoid flooding the system with messages as there's basically no delay in transfer
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+         // Sleep some time to avoid flooding the system with messages as there's basically no delay in transfer
+        // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+        
     }
 
     // with stopOffer we disconnect all subscribers and the publisher is no more visible
     myPublisher.stopOffer();
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    if(argc == 3){
+        delay_factor = atoi(argv[1]);
+        delay_factor2 = atoi(argv[2]);
+    }
+    
     // Register sigHandler for SIGINT
+    printf("Delay : %hu, Delay2 : %hu\n", delay_factor, delay_factor2);
     signal(SIGINT, sigHandler);
 
     std::thread tx(sending);
