@@ -29,7 +29,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <vector>
-#define PORT 8080
+#define PORT 1030
 #define LONGVAL 1024 * 1024
 
 namespace iox
@@ -150,28 +150,29 @@ inline void eth2IceoryxGateway<channel_t, gateway_t>::forwardLocal() noexcept
         exit(EXIT_FAILURE);
     }
     else{
-        printf("bind done\n");
+        
     }
     
     /* starts listening for incoming connections */
+
+    printf("Iter : %d\n", ++count);
+    if (listen(server_fd, 3) < 0)
+    {
+        printf("listen fail");
+        exit(EXIT_FAILURE);
+    }
+    else{
+        printf("listening...\n");
+    }
+
+    /* receive control information */
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
+    {
+        printf("accept fail");
+        exit(EXIT_FAILURE);
+    }
+    
     while(1){
-
-        printf("Iter : %d\n", ++count);
-        if (listen(server_fd, 3) < 0)
-        {
-            printf("listen fail");
-            exit(EXIT_FAILURE);
-        }
-        else{
-            printf("listening...\n");
-        }
-
-        /* receive control information */
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
-        {
-            printf("accept fail");
-            exit(EXIT_FAILURE);
-        }
 
         int sizeread = 0;
         uint64_t total = 0;
@@ -190,7 +191,7 @@ inline void eth2IceoryxGateway<channel_t, gateway_t>::forwardLocal() noexcept
         // for(uint64_t k=0; k < length; ++k)
         //     printf("%u, ",data_long[k]);
         // printf("\n");
-        printf("Header : %d bytes, Total : %ld bytes\n\n\n",sizeread, total);
+        // printf("Header : %d bytes, Total : %ld bytes\n\n\n",sizeread, total);
 
         /* data_long has the serialized data */
         /* do something */
@@ -198,7 +199,6 @@ inline void eth2IceoryxGateway<channel_t, gateway_t>::forwardLocal() noexcept
             auto reader = channel.getExternalTerminal();
             if(reader->getUniqueCode() == code){
                 /* it's a match for publisher */
-                std::cout << "\nMatch for published!!\n";
                 auto publisher = channel.getIceoryxTerminal();
                 auto publisherData = publisher->allocateChunk(length);
                 memcpy(publisherData,data_long, length);
