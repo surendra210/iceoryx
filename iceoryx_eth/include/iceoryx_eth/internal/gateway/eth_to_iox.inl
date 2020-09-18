@@ -187,9 +187,9 @@ inline void eth2IceoryxGateway<channel_t, gateway_t>::forwardLocal() noexcept
             valread = read(new_socket, (uint8_t *)(data_long + total), length - total);
             total += valread;
         }
-        for(uint64_t k=0; k < length; ++k)
-            printf("%u, ",data_long[k]);
-        printf("\n");
+        // for(uint64_t k=0; k < length; ++k)
+        //     printf("%u, ",data_long[k]);
+        // printf("\n");
         printf("Header : %d bytes, Total : %ld bytes\n\n\n",sizeread, total);
 
         /* data_long has the serialized data */
@@ -205,15 +205,6 @@ inline void eth2IceoryxGateway<channel_t, gateway_t>::forwardLocal() noexcept
                 publisher->sendChunk(publisherData);
             }
         });
-
-        //     forEachChannel([this](channel_t channel) { 
-        //         if(channel.getexternalterminal().getuniquecode() == unicode)
-        //     {  publisher = channel.geticeterminal()
-        //     ptr = publisher.allocate(size)
-        //     mecpy(ptrfromremote,ptr);
-        //     publisher.publisher();
-        //      })
-
         /* clear buffer for next cycle after publishing it*/
         (void) memset(data_long, 0x00, sizeof(data_long));
         code = 0u;
