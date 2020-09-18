@@ -49,7 +49,7 @@ class Iceoryx2ethGateway : public gateway_t
     iox::cxx::expected<channel_t, iox::gw::GatewayError>
     setupChannel(const iox::capro::ServiceDescription& service) noexcept;
     int client_handle{-1};
-    uint16_t IOX2ETHPORT = 1010;
+    uint16_t IOX2ETHPORT = 1030;
     const char* IOX2ETHserverIP = {"192.168.21.129"};
     struct sockaddr_in IOX2ETHserv_addr;
 };
