@@ -23,16 +23,6 @@ extern "C"{
 }
 #include <vector>
 
-int32_t connect_to_server(int *cfd, struct sockaddr *serv_addr){
-
-    if(connect(*cfd, (struct sockaddr *)serv_addr, sizeof(*serv_addr)) < 0){
-        close(*cfd);
-        perror("Connect failed : ");
-        return -1;
-    }
-    return 0;
-}
-
 iox::eth::ethDataWriter::ethDataWriter(IdString serviceId, IdString instanceId, IdString eventId)
     : m_serviceId(serviceId)
     , m_instanceId(instanceId)

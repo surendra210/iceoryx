@@ -59,11 +59,7 @@ class ethDataWriter : public iox::eth::DataWriter
     IdString m_instanceId{""};
     IdString m_eventId{""};
     int client_handle{-1};
-    const char* serverIP = {"192.168.21.129"};
-    struct sockaddr_in serv_addr;
     uint8_t unique_code{0};
-
-    //Unique code here
 };
 
 } // namespace eth
