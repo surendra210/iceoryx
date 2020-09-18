@@ -61,6 +61,16 @@ uint8_t iox::eth::ethDataWriter::setUniqueCode(const iox::capro::ServiceDescript
     return ret;
 }
 
+int iox::eth::ethDataWriter::SetSocketChannelID(int SocketChannelID)
+{
+    int ret=-1;
+    if(SocketChannelID!=-1){
+     client_handle = SocketChannelID;
+     ret=0;
+    }
+   return ret; 
+}
+
 void iox::eth::ethDataWriter::connect() noexcept
 {
    std::cout << "Testing the connect" << std::endl ;  
@@ -71,34 +81,34 @@ void iox::eth::ethDataWriter::write(const uint8_t* const bytes, const uint64_t s
 
     std::cout << "Testing the write Byte Address Received" <<bytes << "Size received"<< size << std::endl ;  
     
-    client_handle = socket(AF_INET, SOCK_STREAM, 0);
-    if(client_handle < 0){
-        /* error handling */
-        std::cout << "\n Socket creation error \n" << std::endl; 
-    } 
-    else{
-        std::cout << "\nclient handle : " << client_handle << std::endl;
-        serv_addr.sin_family = AF_INET; 
-        serv_addr.sin_port = htons(PORT);
+    //          client_handle = socket(AF_INET, SOCK_STREAM, 0);
+    // if(client_handle < 0){
+    //     /* error handling */
+    //     std::cout << "\n Socket creation error \n" << std::endl; 
+    // } 
+    // else{
+    //     std::cout << "\nclient handle : " << client_handle << std::endl;
+    //     serv_addr.sin_family = AF_INET; 
+    //     serv_addr.sin_port = htons(PORT);
 
-        // Convert IPv4 and IPv6 addresses from text to binary form 
-        if(inet_pton(AF_INET, serverIP, &serv_addr.sin_addr)<=0){ 
+    //          Convert IPv4 and IPv6 addresses from text to binary form 
+    //     if(inet_pton(AF_INET, serverIP, &serv_addr.sin_addr)<=0){ 
             
-            std::cout << "\nInvalid address/ Address not supported \n" << std::endl; 
-            client_handle = -1;
-        }
-        else{
-            std::cout << "\ninet_pton done \n";
-            if(connect_to_server(&client_handle, (struct sockaddr *)&serv_addr) < 0){ 
+    //          std::cout << "\nInvalid address/ Address not supported \n" << std::endl; 
+    //         client_handle = -1;
+    //     }
+    //     else{
+    //         std::cout << "\ninet_pton done \n";
+    //         if(connect_to_server(&client_handle, (struct sockaddr *)&serv_addr) < 0){ 
                 
-                std::cout << "\nConnection Failed \n" << std::endl;
-                client_handle = -1; 
-            }
-            else{
-                std::cout << "Connected to server!!" << std::endl;
-            }
-        }
-    }
+    //          std::cout << "\nConnection Failed \n" << std::endl;
+    //             client_handle = -1; 
+    //         }
+    //         else{
+    //             std::cout << "Connected to server!!" << std::endl;
+    //         }
+    //     }
+    // }
 
     if(client_handle >= 0){
         std::cout << "client handle : " << client_handle << std::endl;

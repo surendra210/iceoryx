@@ -47,6 +47,7 @@ class ethDataWriter : public iox::eth::DataWriter
     virtual ~ethDataWriter();
     ethDataWriter(const ethDataWriter&) = delete;
     uint8_t setUniqueCode(const iox::capro::ServiceDescription&);
+    int SetSocketChannelID(int);
     void connect() noexcept override;
     void write(const uint8_t* const bytes, const uint64_t size) noexcept override;
     IdString getServiceId() const noexcept override;
@@ -57,7 +58,7 @@ class ethDataWriter : public iox::eth::DataWriter
     IdString m_serviceId{""};
     IdString m_instanceId{""};
     IdString m_eventId{""};
-    int client_handle;
+    int client_handle{-1};
     const char* serverIP = {"192.168.21.129"};
     struct sockaddr_in serv_addr;
     uint8_t unique_code{0};

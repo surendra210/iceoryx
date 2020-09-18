@@ -33,6 +33,48 @@ template <typename channel_t, typename gateway_t>
 inline Iceoryx2ethGateway<channel_t, gateway_t>::Iceoryx2ethGateway() noexcept
     : gateway_t(iox::capro::Interfaces::DDS, DISCOVERY_PERIOD, FORWARDING_PERIOD)
 {
+    client_handle = socket(AF_INET, SOCK_STREAM, 0);
+    if(client_handle < 0){
+        /* error handling */
+        std::cout << "\n Socket creation error \n" << std::endl; 
+    } 
+    else{
+        std::cout << "\nclient handle : " << client_handle << std::endl;
+        IOX2ETHserv_addr.sin_family = AF_INET; 
+        IOX2ETHserv_addr.sin_port = htons(IOX2ETHPORT);
+
+        // Convert IPv4 and IPv6 addresses from text to binary form 
+        if(inet_pton(AF_INET, IOX2ETHserverIP, &IOX2ETHserv_addr.sin_addr)<=0){ 
+            
+            std::cout << "\nInvalid address/ Address not supported \n" << std::endl; 
+            client_handle = -1;
+        }
+        else{
+            std::cout << "\ninet_pton done \n";
+            if(connect_to_server(&client_handle, (struct sockaddr *)&IOX2ETHserv_addr) < 0){ 
+                
+                std::cout << "\nConnection Failed \n" << std::endl;
+                client_handle = -1; 
+            }
+            else{
+                std::cout << "Connected to server!!" << std::endl;
+            }
+        }
+    }
+}
+template <typename channel_t, typename gateway_t>
+int32_t Iceoryx2ethGateway<channel_t, gateway_t>::connect_to_server(int *cfd, struct sockaddr *serv_addr){
+
+    if(connect(*cfd, (struct sockaddr *)serv_addr, sizeof(*serv_addr)) < 0){
+        close(*cfd);
+        perror("Connect failed : ");
+        return -1;
+    }
+    return 0;
+}
+template <typename channel_t, typename gateway_t>
+int Iceoryx2ethGateway<channel_t, gateway_t>::GetSocketChannelID(){
+    return client_handle;
 }
 template <typename channel_t, typename gateway_t>
 inline Iceoryx2ethGateway<channel_t, gateway_t>::~Iceoryx2ethGateway() noexcept
@@ -124,11 +166,12 @@ template <typename channel_t, typename gateway_t>
 iox::cxx::expected<channel_t, iox::gw::GatewayError>
 Iceoryx2ethGateway<channel_t, gateway_t>::setupChannel(const iox::capro::ServiceDescription& service) noexcept
 {
-    return this->addChannel(service).and_then([&service](channel_t channel) {
+    return this->addChannel(service).and_then([&service,this](channel_t channel) {
         auto subscriber = channel.getIceoryxTerminal();
         auto dataWriter = channel.getExternalTerminal();
         subscriber->subscribe(SUBSCRIBER_CACHE_SIZE);
         dataWriter->setUniqueCode(service);
+        dataWriter->SetSocketChannelID(GetSocketChannelID());
         dataWriter->connect();
 
         std::cout <<"Address of getExternalTerminal" << &dataWriter << std::endl;

@@ -20,6 +20,12 @@
 #include "iceoryx_posh/gateway/gateway_generic.hpp"
 #include "iceoryx_posh/popo/subscriber.hpp"
 
+/* Tcp headers */
+#include <string>
+#include <stdio.h> 
+#include <sys/socket.h> 
+#include <arpa/inet.h> 
+
 namespace iox
 {
 namespace eth
@@ -36,10 +42,16 @@ class Iceoryx2ethGateway : public gateway_t
     void loadConfiguration(const iox::config::GatewayConfig& config) noexcept;
     void discover(const iox::capro::CaproMessage& msg) noexcept;
     void forward(const channel_t& channel) noexcept;
+    int connect_to_server(int *cfd, struct sockaddr *serv_addr);
+    int GetSocketChannelID();
    ~Iceoryx2ethGateway() noexcept;
   private:
     iox::cxx::expected<channel_t, iox::gw::GatewayError>
     setupChannel(const iox::capro::ServiceDescription& service) noexcept;
+    int client_handle{-1};
+    uint16_t IOX2ETHPORT = 1010;
+    const char* IOX2ETHserverIP = {"192.168.21.129"};
+    struct sockaddr_in IOX2ETHserv_addr;
 };
 
 } // namespace eth
