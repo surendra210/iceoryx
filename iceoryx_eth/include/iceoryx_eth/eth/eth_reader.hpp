@@ -58,11 +58,11 @@ class ethDataReader : public DataReader
     IdString m_serviceId{""};
     IdString m_instanceId{""};
     IdString m_eventId{""};
-    uint8_t unique_code{};
-
-    
-
-    //std::atomic_bool m_isConnected{false};
+    union uniCode
+    {
+     uint64_t unique_code{0};
+     uint8_t  u8Array[8];
+    }ServiceHash;  
 };
 
 } // namespace eth

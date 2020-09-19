@@ -59,7 +59,11 @@ class ethDataWriter : public iox::eth::DataWriter
     IdString m_instanceId{""};
     IdString m_eventId{""};
     int client_handle{-1};
-    uint8_t unique_code{0};
+    union uniCode
+    {
+     uint64_t unique_code{0};
+     uint8_t  u8Array[8];
+    }ServiceHash;  
 };
 
 } // namespace eth

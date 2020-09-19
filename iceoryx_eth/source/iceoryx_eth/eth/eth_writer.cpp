@@ -39,15 +39,19 @@ iox::eth::ethDataWriter::~ethDataWriter()
 uint8_t iox::eth::ethDataWriter::setUniqueCode(const iox::capro::ServiceDescription& service){
 
     uint8_t ret = 1u;
-    for(uint8_t idx = 0u; idx < pMap.size(); ++idx){
-        if(service == pMap[idx].m_serviceDescription){
-            unique_code = pMap[idx].unique_id;
-            ret = 0; //success - found
-            break;
-        }
-    }
-    if(ret == 1)
-        std::cout << "Unknown service!" << std::endl;
+    auto ServiceString      = "/" + service.getServiceIDString()+ "/"+service.getInstanceIDString()+"/"+service.getEventIDString();
+    std::size_t hashcode    = std::hash<std::string>{}(ServiceString);
+    
+    ServiceHash.unique_code =hashcode;
+    // for(uint8_t idx = 0u; idx < pMap.size(); ++idx){
+    //     if(service == pMap[idx].m_serviceDescription){
+    //         unique_code = pMap[idx].unique_id;
+    //         ret = 0; //success - found
+    //         break;
+    //     }
+    // }
+    // if(ret == 1)
+    //     std::cout << "Unknown service!" << std::endl;
     return ret;
 }
 
@@ -68,17 +72,18 @@ void iox::eth::ethDataWriter::connect() noexcept
 
 void iox::eth::ethDataWriter::write(const uint8_t* const bytes, const uint64_t size) noexcept
 {
+    uint8_t size_array[sizeof(size)/sizeof(uint8_t)];
+    std::vector<uint8_t> gatewayWrapper;
 
     //std::cout << "Testing the write Byte Address Received" <<bytes << "Size received"<< size << std::endl ;     
     if(client_handle >= 0){
         std::cout << "client handle : " << client_handle << std::endl;
 
-        // GatewayWrapper is the packet that will be sent over Eth, (Header + Payload)
-        std::vector<uint8_t> gatewayWrapper;
+        // GatewayWrapper is the packet that will be sent over Eth, (Header(ServiceHash,SizeOfPublisherData))
 
-        gatewayWrapper.push_back(unique_code);
-
-        uint8_t size_array[sizeof(size)/sizeof(uint8_t)];
+        //gatewayWrapper.push_back(unique_code);
+        gatewayWrapper.insert(gatewayWrapper.end(),&ServiceHash.u8Array[0],&ServiceHash.u8Array[sizeof(uint64_t)]);
+        
         (void) memcpy(size_array, &size, sizeof(size));
         //Size of Publish Data
         gatewayWrapper.insert(gatewayWrapper.end(),&size_array[0],&size_array[sizeof(size_array)]);

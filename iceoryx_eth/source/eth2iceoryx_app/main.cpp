@@ -60,18 +60,17 @@ int main()
     iox::runtime::PoshRuntime::getInstance("/iox-gw-eth2iceoryx");
 
     iox::eth::eth2IceoryxGateway<> gw;
-    gw.loadConfigurationEth(pMap);
-
-    // iox::popo::TomlGatewayConfigParser::parse()
-    //     .and_then([&](iox::popo::GatewayConfig config) { gw.loadConfiguration(config); })
-    //     .or_else([&](iox::popo::TomlGatewayConfigParseError err) {
-    //         iox::eth::LogWarn() << "[Main] Failed to parse gateway config with error: "
-    //                             << iox::popo::TomlGatewayConfigParseErrorString[err];
-    //         iox::eth::LogWarn() << "[Main] Using default configuration.";
-    //         iox::popo::GatewayConfig defaultConfig;
-    //         defaultConfig.setDefaults();
-    //         gw.loadConfiguration(defaultConfig);
-    //     });
+    //gw.loadConfigurationEth(pMap);
+    iox::config::TomlGatewayConfigParser::parse()
+        .and_then([&](iox::config::GatewayConfig config) { gw.loadConfiguration(config); })
+        .or_else([&](iox::config::TomlGatewayConfigParseError err) {
+            iox::eth::LogWarn() << "[Main] Failed to parse gateway config with error: "
+                                << iox::config::TomlGatewayConfigParseErrorString[err];
+            iox::eth::LogWarn() << "[Main] Using default configuration.";
+            iox::config::GatewayConfig defaultConfig;
+            defaultConfig.setDefaults();
+            gw.loadConfiguration(defaultConfig);
+        });
     gw.runMultithreaded();
 
     // Run until SIGINT or SIGTERM

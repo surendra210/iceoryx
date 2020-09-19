@@ -62,6 +62,7 @@ inline void eth2IceoryxGateway<channel_t, gateway_t>::loadConfiguration(const io
             setupChannel(serviceDescription);
         }
     }
+    forwardLocal();
 }
 
 // /* loading PMap config file */
@@ -118,7 +119,7 @@ inline void eth2IceoryxGateway<channel_t, gateway_t>::forward(const channel_t& c
 template <typename channel_t, typename gateway_t>
 inline void eth2IceoryxGateway<channel_t, gateway_t>::forwardLocal() noexcept
 {
-    uint8_t code{};
+    uint64_t code{};
     uint64_t length{};
     int server_fd, new_socket, valread, count = 0;
     struct sockaddr_in address;
@@ -177,7 +178,7 @@ inline void eth2IceoryxGateway<channel_t, gateway_t>::forwardLocal() noexcept
         int sizeread = 0;
         uint64_t total = 0;
 
-        valread = read(new_socket, (uint8_t *)&code, sizeof(code));
+        valread = read(new_socket, (uint64_t *)&code, sizeof(code));
         sizeread += valread;
 
         valread = read(new_socket, (uint64_t *)&length, sizeof(length));
