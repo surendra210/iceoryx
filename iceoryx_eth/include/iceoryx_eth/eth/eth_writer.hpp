@@ -46,7 +46,8 @@ class ethDataWriter : public iox::eth::DataWriter
     ethDataWriter(const IdString serviceId, const IdString instanceId, const IdString eventId);
     virtual ~ethDataWriter();
     ethDataWriter(const ethDataWriter&) = delete;
-    uint8_t setUniqueCode(const iox::capro::ServiceDescription&);
+    void setUniqueCode(const iox::capro::ServiceDescription&);
+    int SetSocketChannelID(int);
     void connect() noexcept override;
     void write(const uint8_t* const bytes, const uint64_t size) noexcept override;
     IdString getServiceId() const noexcept override;
@@ -57,12 +58,12 @@ class ethDataWriter : public iox::eth::DataWriter
     IdString m_serviceId{""};
     IdString m_instanceId{""};
     IdString m_eventId{""};
-    int client_handle;
-    const char* serverIP = {"192.168.21.129"};
-    struct sockaddr_in serv_addr;
-    uint8_t unique_code{0};
-
-    //Unique code here
+    int client_handle{-1};
+    union uniCode
+    {
+     uint64_t unique_code{0};
+     uint8_t  u8Array[8];
+    }ServiceHash;  
 };
 
 } // namespace eth

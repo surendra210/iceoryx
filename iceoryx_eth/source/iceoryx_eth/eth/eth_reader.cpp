@@ -29,19 +29,12 @@ iox::eth::ethDataReader::~ethDataReader()
     LogDebug() << "[ethDataReader] Destroyed ethDataReader.";
 }
 
-uint8_t iox::eth::ethDataReader::getUniqueCode(){ return unique_code; };
+uint64_t iox::eth::ethDataReader::getUniqueCode(){ return ServiceHash.unique_code; };
 
-uint8_t iox::eth::ethDataReader::setUniqueCode(const iox::capro::ServiceDescription& service){
-
-    uint8_t ret = 1u;
-    for(uint8_t idx = 0u; idx < pMap.size(); ++idx){
-        if(service == pMap[idx].m_serviceDescription){
-            unique_code = pMap[idx].unique_id;
-            ret = 0; //success - found
-            break;
-        }
-    }
-    return ret;
+void iox::eth::ethDataReader::setUniqueCode(const iox::capro::ServiceDescription& service){
+    auto ServiceString     = "/" + service.getServiceIDString()+ "/"+service.getInstanceIDString()+"/"+service.getEventIDString();
+    std::size_t hashcode   = std::hash<std::string>{}(ServiceString);
+    ServiceHash.unique_code=hashcode;
 }
 
 void iox::eth::ethDataReader::connect() noexcept
