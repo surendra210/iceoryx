@@ -1,5 +1,5 @@
 
-# Gateway to DDS Networks
+# Gateway to eth Networks
 A gateway for bridging between iceoryx systems and eth networks.
 The gateway enables iceoryx systems running on separate network connected nodes to communicate with each other.
 
@@ -23,7 +23,7 @@ iceoryx/tools/iceoryx_build_test.sh release with-eth-gateway
 
 You may want to specify the build directory, this can be done via a flag. e.g.
 ```bash
-iceoryx/tools/iceoryx_build_test.sh --builddir ./my-build release with-dds-gateway
+iceoryx/tools/iceoryx_build_test.sh --builddir ./my-build release with-eth-gateway
 ```
 
 Once complete, the gateway binaries can be found in `./my-build/install/prefix/bin`.
