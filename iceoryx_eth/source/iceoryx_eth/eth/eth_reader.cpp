@@ -29,7 +29,7 @@ iox::eth::ethDataReader::~ethDataReader()
     LogDebug() << "[ethDataReader] Destroyed ethDataReader.";
 }
 
-uint8_t iox::eth::ethDataReader::getUniqueCode(){ return ServiceHash.unique_code; };
+uint64_t iox::eth::ethDataReader::getUniqueCode(){ return ServiceHash.unique_code; };
 
 uint8_t iox::eth::ethDataReader::setUniqueCode(const iox::capro::ServiceDescription& service){
 
