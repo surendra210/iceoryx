@@ -91,7 +91,7 @@ void iox::eth::ethDataWriter::write(const uint8_t* const bytes, const uint64_t s
         if(-1 != send(client_handle, (std::vector<uint8_t>*)&gatewayWrapper[0], gatewayWrapper.size() , 0 ))
         {
             if(-1 != send(client_handle, bytes,size, 0 )){
-                std::cout << "Send data payload failed!" << std::endl;
+                std::cout << "Sent payload!" << std::endl;
             }
             else{
                 std::cout << "Send data failed!" << std::endl;
