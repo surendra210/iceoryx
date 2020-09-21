@@ -40,7 +40,7 @@ class ethDataReader : public DataReader
 
     void connect() noexcept override;
 
-    uint8_t setUniqueCode(const iox::capro::ServiceDescription&);
+    void setUniqueCode(const iox::capro::ServiceDescription&);
     uint64_t getUniqueCode();
 
     iox::cxx::optional<uint64_t> peekNextSize() override;

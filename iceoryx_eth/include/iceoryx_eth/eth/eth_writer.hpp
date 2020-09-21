@@ -46,7 +46,7 @@ class ethDataWriter : public iox::eth::DataWriter
     ethDataWriter(const IdString serviceId, const IdString instanceId, const IdString eventId);
     virtual ~ethDataWriter();
     ethDataWriter(const ethDataWriter&) = delete;
-    uint8_t setUniqueCode(const iox::capro::ServiceDescription&);
+    void setUniqueCode(const iox::capro::ServiceDescription&);
     int SetSocketChannelID(int);
     void connect() noexcept override;
     void write(const uint8_t* const bytes, const uint64_t size) noexcept override;

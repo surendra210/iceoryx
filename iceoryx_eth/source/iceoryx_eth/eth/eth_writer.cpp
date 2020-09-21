@@ -36,23 +36,11 @@ iox::eth::ethDataWriter::~ethDataWriter()
 
 }
 
-uint8_t iox::eth::ethDataWriter::setUniqueCode(const iox::capro::ServiceDescription& service){
+void iox::eth::ethDataWriter::setUniqueCode(const iox::capro::ServiceDescription& service){
 
-    uint8_t ret = 1u;
     auto ServiceString      = "/" + service.getServiceIDString()+ "/"+service.getInstanceIDString()+"/"+service.getEventIDString();
     std::size_t hashcode    = std::hash<std::string>{}(ServiceString);
-    
     ServiceHash.unique_code =hashcode;
-    // for(uint8_t idx = 0u; idx < pMap.size(); ++idx){
-    //     if(service == pMap[idx].m_serviceDescription){
-    //         unique_code = pMap[idx].unique_id;
-    //         ret = 0; //success - found
-    //         break;
-    //     }
-    // }
-    // if(ret == 1)
-    //     std::cout << "Unknown service!" << std::endl;
-    return ret;
 }
 
 int iox::eth::ethDataWriter::SetSocketChannelID(int SocketChannelID)
