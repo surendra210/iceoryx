@@ -15,6 +15,7 @@
 #include <atomic>
 
 #include "gateway/iox_to_ros.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "internal/log/logging.hpp"
 #include "iceoryx_posh/gateway/gateway_config.hpp"
 #include "iceoryx_posh/gateway/toml_gateway_config_parser.hpp"
@@ -51,7 +52,7 @@ int main()
 
     // Start application
     iox::runtime::PoshRuntime::getInstance("/iox-gw-iceoryx2dds");
-
+    rclcpp::init(0, nullptr);
     iox::ros::Iceoryx2rosGateway<> gw;
 
     // iox::popo::TomlGatewayConfigParser::parse()

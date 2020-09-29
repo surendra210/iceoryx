@@ -14,6 +14,16 @@
 
 cmake_minimum_required(VERSION 3.7)
 
+#_________________ros package___Default to C++17_________________
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+#__________________________________________________________
+
 file (STRINGS "../VERSION" iceoryx_ros_VERSION)
 project(iceoryx_ros VERSION ${iceoryx_ros_VERSION})
 
@@ -22,6 +32,13 @@ option(test "build test binaries")
 find_package(cpptoml REQUIRED)
 find_package(iceoryx_posh REQUIRED)
 find_package(iceoryx_utils REQUIRED)
+
+#________ros packages__________
+
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+#_______________________________
 
 include(IceoryxPackageHelper)
 include(IceoryxPlatformDetection)
@@ -49,6 +66,9 @@ add_library(iceoryx_ros
     STATIC
     source/iceoryx_ros/log/logging.cpp
 )
+#______________ros package________________________________
+ament_target_dependencies(iceoryx_ros rclcpp std_msgs)
+#________________________________________________________
 
 target_compile_options(iceoryx_ros PUBLIC -std=c++11)
 
@@ -60,7 +80,7 @@ target_include_directories(iceoryx_ros
 )
 
 target_link_libraries(iceoryx_ros
-    PRIVATE
+    #PRIVATE
     iceoryx_posh::iceoryx_posh
     iceoryx_utils::iceoryx_utils
     iceoryx_posh::iceoryx_posh_gateway
@@ -75,7 +95,9 @@ target_link_libraries(iceoryx_ros
         source/iceoryx_ros/ros/ros_writer.cpp
         source/iceoryx_ros/ros/ros_reader.cpp
     )
-
+#__________________ros package__________________
+ament_package()
+#_______________________________________________
 #
 ########## build gateway apps ##########
 #

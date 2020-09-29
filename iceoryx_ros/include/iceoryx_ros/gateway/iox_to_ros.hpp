@@ -35,7 +35,7 @@ namespace ros
 ///
 template <typename channel_t = iox::gw::Channel<iox::popo::Subscriber, iox::ros::data_writer_t>,
           typename gateway_t = iox::gw::GatewayGeneric<channel_t>>
-class Iceoryx2rosGateway : public gateway_t
+class Iceoryx2rosGateway : public gateway_t, public rclcpp::Node
 {
   public:
     Iceoryx2rosGateway() noexcept;

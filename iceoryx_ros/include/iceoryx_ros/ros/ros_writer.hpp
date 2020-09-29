@@ -22,7 +22,13 @@
 #include "iceoryx_posh/capro/service_description.hpp"
 #include "iceoryx_posh/iceoryx_posh_types.hpp"
 
+#include <chrono>
+#include <functional>
+#include <memory>
 #include <string>
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/u_int8_multi_array.hpp"
 
 namespace iox
 {
@@ -31,7 +37,7 @@ namespace ros
 ///
 /// @brief Implementation of the DataWriter abstraction using the ros implementation.
 ///
-class rosDataWriter : public iox::ros::DataWriter
+class rosDataWriter : public iox::ros::DataWriter, public rclcpp::Node
 {
   public:
     rosDataWriter() = delete;
@@ -51,6 +57,7 @@ class rosDataWriter : public iox::ros::DataWriter
     IdString m_instanceId{""};
     IdString m_eventId{""};
     int client_handle{-1};
+    rclcpp::Publisher<std_msgs::msg::UInt8MultiArray>::SharedPtr publisher_{nullptr};
     union uniCode
     {
      uint64_t unique_code{0};
