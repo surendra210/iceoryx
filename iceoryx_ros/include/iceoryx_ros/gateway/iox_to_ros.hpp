@@ -35,14 +35,13 @@ namespace ros
 ///
 template <typename channel_t = iox::gw::Channel<iox::popo::Subscriber, iox::ros::data_writer_t>,
           typename gateway_t = iox::gw::GatewayGeneric<channel_t>>
-class Iceoryx2rosGateway : public gateway_t, public rclcpp::Node
+class Iceoryx2rosGateway : public gateway_t
 {
   public:
     Iceoryx2rosGateway() noexcept;
     void loadConfiguration(const iox::config::GatewayConfig& config) noexcept;
     void discover(const iox::capro::CaproMessage& msg) noexcept;
     void forward(const channel_t& channel) noexcept;
-    int connect_to_server(int *cfd, struct sockaddr *serv_addr);
     int GetSocketChannelID();
    ~Iceoryx2rosGateway() noexcept;
   private:

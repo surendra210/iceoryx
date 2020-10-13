@@ -21,7 +21,7 @@
 #include <vector>
 
 iox::ros::rosDataWriter::rosDataWriter(IdString serviceId, IdString instanceId, IdString eventId)
-    : Node("test_pub")
+    : Node("ROS_NODE")
     , m_serviceId(serviceId)
     , m_instanceId(instanceId)
     , m_eventId(eventId)
@@ -38,7 +38,9 @@ void iox::ros::rosDataWriter::setUniqueCode(const iox::capro::ServiceDescription
 
     auto ServiceString      = "/" + service.getServiceIDString()+ "/"+service.getInstanceIDString()+"/"+service.getEventIDString();
     std::size_t hashcode    = std::hash<std::string>{}(ServiceString);
-    ServiceHash.unique_code =hashcode;
+    ServiceHash.unique_code = hashcode;
+    printf("\nUnique code : %lu\n", hashcode);
+    
 }
 
 int iox::ros::rosDataWriter::SetSocketChannelID(int SocketChannelID)
@@ -54,7 +56,7 @@ int iox::ros::rosDataWriter::SetSocketChannelID(int SocketChannelID)
 void iox::ros::rosDataWriter::connect() noexcept
 {
    std::cout << "Testing the connect" << std::endl ;  
-   this->publisher_ = this->create_publisher<std_msgs::msg::UInt8MultiArray>("topic", 10);
+   this->publisher_ = this->create_publisher<std_msgs::msg::UInt8MultiArray>("ROS_TOPIC", 200);
 }
 
 void iox::ros::rosDataWriter::write(const uint8_t* const bytes, const uint64_t size) noexcept
@@ -63,10 +65,11 @@ void iox::ros::rosDataWriter::write(const uint8_t* const bytes, const uint64_t s
     
     std_msgs::msg::UInt8MultiArray msg;
     msg.layout.dim.push_back(std_msgs::msg::MultiArrayDimension());
-    msg.layout.dim[0].size = size;
+    msg.layout.dim[0].size = size + sizeof(ServiceHash.unique_code);
     msg.layout.dim[0].stride = 1;
     msg.layout.dim[0].label = "x"; // or whatever name you typically use to index 
     
+    msg.data.insert(msg.data.end(),&ServiceHash.u8Array[0],&ServiceHash.u8Array[sizeof(uint64_t)]);
     msg.data.insert(msg.data.end(), bytes, bytes+size);
 
     

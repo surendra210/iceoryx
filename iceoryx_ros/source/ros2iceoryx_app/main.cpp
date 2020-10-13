@@ -50,6 +50,13 @@ class ShutdownManager
 iox::posix::Semaphore ShutdownManager::s_semaphore = iox::posix::Semaphore::create(0u).get_value();
 std::atomic_bool ShutdownManager::s_shutdownRequested{false};
 
+void spinningLoop(std::shared_ptr<iox::ros::ros2IceoryxGateway<>> gwsp){
+
+    printf("Will start spinning\n");
+    rclcpp::spin(gwsp);
+    rclcpp::shutdown();
+}
+
 int main()
 {
     // Set OS signal handlers
@@ -58,20 +65,23 @@ int main()
 
     // Start application
     iox::runtime::PoshRuntime::getInstance("/iox-gw-ros2iceoryx");
-
-    iox::ros::ros2IceoryxGateway<> gw;
-    //gw.loadConfigurationros(pMap);
-    iox::config::TomlGatewayConfigParser::parse()
-        .and_then([&](iox::config::GatewayConfig config) { gw.loadConfiguration(config); })
+    rclcpp::init(0, nullptr);
+    auto gwsp = std::make_shared<iox::ros::ros2IceoryxGateway<>>();// gw;
+    iox::config::TomlGatewayConfigParser::parse("/etc/iceoryx/gateway_config1.toml")
+        .and_then([&](iox::config::GatewayConfig config) { gwsp->loadConfiguration(config); })
         .or_else([&](iox::config::TomlGatewayConfigParseError err) {
             iox::ros::LogWarn() << "[Main] Failed to parse gateway config with error: "
                                 << iox::config::TomlGatewayConfigParseErrorString[err];
             iox::ros::LogWarn() << "[Main] Using default configuration.";
             iox::config::GatewayConfig defaultConfig;
             defaultConfig.setDefaults();
-            gw.loadConfiguration(defaultConfig);
+            gwsp->loadConfiguration(defaultConfig);
         });
-    gw.runMultithreaded();
+
+    std::thread spinning_thread = std::thread([&gwsp]{ spinningLoop(gwsp); });    
+    gwsp->runMultithreaded();
+    spinning_thread.join();
+
 
     // Run until SIGINT or SIGTERM
     ShutdownManager::waitUntilShutdown();

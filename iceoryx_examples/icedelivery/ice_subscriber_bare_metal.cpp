@@ -34,7 +34,7 @@ void receiving()
     iox::runtime::PoshRuntime::getInstance("/iox-ex-subscriber-bare-metal");
 
     // Create a subscriber
-    iox::popo::Subscriber mySubscriber({"RADAR", "Video", "Some1"});
+    iox::popo::Subscriber mySubscriber({"RADAR", "Video", "Some4"});
 
     // The subscriber will not do the subscription before we call subscribe(). The queue size of the subscriber is
     // provided as parameter

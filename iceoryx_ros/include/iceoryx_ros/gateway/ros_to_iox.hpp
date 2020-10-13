@@ -14,23 +14,30 @@
 
 #ifndef IOX_ros_GATEWAY_ros_TO_IOX_HPP
 #define IOX_ros_GATEWAY_ros_TO_IOX_HPP
-
 #include "iceoryx_ros/ros/ros_types.hpp"
 #include "iceoryx_posh/gateway/channel.hpp"
 #include "iceoryx_posh/gateway/gateway_generic.hpp"
 #include "iceoryx_posh/gateway/gateway_config.hpp"
 #include "iceoryx_posh/popo/publisher.hpp"
+#include <functional>
+#include <memory>
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/u_int8_multi_array.hpp"
+using std::placeholders::_1;
+
 
 namespace iox
 {
 namespace ros
 {
+
 ///
 /// @brief ros Gateway implementation for the ros to iceoryx direction.
 ///
 template <typename channel_t = iox::gw::Channel<iox::popo::Publisher, iox::ros::data_reader_t>,
           typename gateway_t = iox::gw::GatewayGeneric<channel_t>>
-class ros2IceoryxGateway : public gateway_t
+class ros2IceoryxGateway : public rclcpp::Node, public gateway_t
 {
     using ChannelFactory = std::function<channel_t(const iox::capro::ServiceDescription)>;
 
@@ -40,12 +47,13 @@ class ros2IceoryxGateway : public gateway_t
     void loadConfiguration(const iox::config::GatewayConfig& config) noexcept;
     void discover(const iox::capro::CaproMessage& msg) noexcept;
     void forward(const channel_t& channel) noexcept;
-    void forwardLocal() noexcept;
+    void forwardLocal(const std_msgs::msg::UInt8MultiArray::SharedPtr msg) const;
     ~ros2IceoryxGateway() noexcept;
   private:
     void* m_reservedChunk = nullptr;
     iox::cxx::expected<channel_t, iox::gw::GatewayError>
     setupChannel(const iox::capro::ServiceDescription& service) noexcept;
+    rclcpp::Subscription<std_msgs::msg::UInt8MultiArray>::SharedPtr subscription_;
 };
 
 } // namespace ros

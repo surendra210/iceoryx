@@ -29,7 +29,7 @@ iox::ros::rosDataReader::~rosDataReader()
     LogDebug() << "[rosDataReader] Destroyed rosDataReader.";
 }
 
-uint64_t iox::ros::rosDataReader::getUniqueCode(){ return ServiceHash.unique_code; };
+uint64_t iox::ros::rosDataReader::getUniqueCode(){ return ServiceHash.unique_code; }
 
 void iox::ros::rosDataReader::setUniqueCode(const iox::capro::ServiceDescription& service){
     auto ServiceString     = "/" + service.getServiceIDString()+ "/"+service.getInstanceIDString()+"/"+service.getEventIDString();
@@ -39,6 +39,7 @@ void iox::ros::rosDataReader::setUniqueCode(const iox::capro::ServiceDescription
 
 void iox::ros::rosDataReader::connect() noexcept
 {
+
 }
 
 iox::cxx::optional<uint64_t> iox::ros::rosDataReader::peekNextSize()

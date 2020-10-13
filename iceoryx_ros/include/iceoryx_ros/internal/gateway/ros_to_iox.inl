@@ -20,6 +20,8 @@
 #include "iceoryx_posh/capro/service_description.hpp"
 #include "iceoryx_utils/cxx/string.hpp"
 
+#include "gateway/ros_to_iox.hpp"
+
 /* TCP headers */
 #include <unistd.h>
 #include <iostream>
@@ -29,22 +31,26 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <vector>
-#define PORT 1030
-#define LONGVAL 1024 * 1024
+
 
 namespace iox
 {
 namespace ros
 {
+
 template <typename channel_t, typename gateway_t>
 inline ros2IceoryxGateway<channel_t, gateway_t>::ros2IceoryxGateway() noexcept
-    : gateway_t(iox::capro::Interfaces::DDS, DISCOVERY_PERIOD, FORWARDING_PERIOD)
+    : Node("ROS_NODE"),gateway_t(iox::capro::Interfaces::DDS, DISCOVERY_PERIOD, FORWARDING_PERIOD)
 {
+    this->subscription_ = this->create_subscription<std_msgs::msg::UInt8MultiArray>(
+        "ROS_TOPIC", 200, std::bind(&ros2IceoryxGateway::forwardLocal, this, _1));
+    printf("Subscription created!\n");
 }
+
 template <typename channel_t, typename gateway_t>
 inline ros2IceoryxGateway<channel_t, gateway_t>::~ros2IceoryxGateway() noexcept
-{}
-
+{
+}
 
 template <typename channel_t, typename gateway_t>
 inline void ros2IceoryxGateway<channel_t, gateway_t>::loadConfiguration(const iox::config::GatewayConfig& config) noexcept
@@ -62,7 +68,6 @@ inline void ros2IceoryxGateway<channel_t, gateway_t>::loadConfiguration(const io
             setupChannel(serviceDescription);
         }
     }
-    forwardLocal();
 }
 
 template <typename channel_t, typename gateway_t>
@@ -75,26 +80,48 @@ ros2IceoryxGateway<channel_t, gateway_t>::discover([[gnu::unused]] const iox::ca
 template <typename channel_t, typename gateway_t>
 inline void ros2IceoryxGateway<channel_t, gateway_t>::forward(const channel_t& channel) noexcept
 {
-
+    
 }
 
 template <typename channel_t, typename gateway_t>
-inline void ros2IceoryxGateway<channel_t, gateway_t>::forwardLocal() noexcept
+inline void ros2IceoryxGateway<channel_t, gateway_t>::forwardLocal(const std_msgs::msg::UInt8MultiArray::SharedPtr msg) const
 {
-}
+    
 
+    uint64_t hashcode{};
+    uint64_t payloadSize{msg->data.size() - sizeof(hashcode)}; // size of data packet = size of hashcode (8 bytes) + size of payload
+
+    // RCLCPP_INFO(this->get_logger(), "I have %u bytes of payload\n",payloadSize);
+
+    memcpy((void*) &hashcode, (void *)&(msg->data.at(0)), sizeof(hashcode));
+
+    // RCLCPP_INFO(this->get_logger(),"hashcode : %lu",hashcode);
+    
+    this->forEachChannel([this,&hashcode, &payloadSize, &msg](channel_t channel) { 
+        auto reader = channel.getExternalTerminal();
+        printf("Inside forwardlocal %lu : %lu\n",reader->getUniqueCode(), hashcode);
+        if(reader->getUniqueCode() == hashcode){
+            /* it's a match for publisher */
+            auto publisher = channel.getIceoryxTerminal();
+            auto publisherData = publisher->allocateChunk(payloadSize);
+            memcpy((void*)publisherData, (void *)&(msg->data.at(sizeof(hashcode))), payloadSize);
+            publisher->sendChunk(publisherData);
+        }
+    });
+}
 
 // ======================================== Private ======================================== //
 template <typename channel_t, typename gateway_t>
 iox::cxx::expected<channel_t, iox::gw::GatewayError>
 ros2IceoryxGateway<channel_t, gateway_t>::setupChannel(const iox::capro::ServiceDescription& service) noexcept
 {
+    
     return this->addChannel(service).and_then([&service](channel_t channel) {
         auto publisher = channel.getIceoryxTerminal();
         auto reader = channel.getExternalTerminal();
         publisher->offer();
         reader->setUniqueCode(service);
-        reader->connect();
+        reader->connect();   
         iox::LogDebug() << "[ros2IceoryxGateway] Setup channel for service: {" << service.getServiceIDString() << ", "
                         << service.getInstanceIDString() << ", " << service.getEventIDString() << "}";
     });

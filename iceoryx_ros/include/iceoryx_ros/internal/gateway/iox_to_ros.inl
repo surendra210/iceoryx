@@ -31,20 +31,11 @@ namespace ros
 // ======================================== Public ======================================== //
 template <typename channel_t, typename gateway_t>
 inline Iceoryx2rosGateway<channel_t, gateway_t>::Iceoryx2rosGateway() noexcept
-    : gateway_t(iox::capro::Interfaces::DDS, DISCOVERY_PERIOD, FORWARDING_PERIOD), Node("test_pub")
+    : gateway_t(iox::capro::Interfaces::DDS, DISCOVERY_PERIOD, FORWARDING_PERIOD)
 {
     
 }
-template <typename channel_t, typename gateway_t>
-int32_t Iceoryx2rosGateway<channel_t, gateway_t>::connect_to_server(int *cfd, struct sockaddr *serv_addr){
 
-    if(connect(*cfd, (struct sockaddr *)serv_addr, sizeof(*serv_addr)) < 0){
-        close(*cfd);
-        perror("Connect failed : ");
-        return -1;
-    }
-    return 0;
-}
 template <typename channel_t, typename gateway_t>
 int Iceoryx2rosGateway<channel_t, gateway_t>::GetSocketChannelID(){
     return 0;
