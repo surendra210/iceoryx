@@ -18,7 +18,7 @@ namespace iox
 {
 namespace eth
 {
-// constexpr char DDSLoggingComponent::Ctx[];
-// constexpr char DDSLoggingComponent::Description[];
+constexpr char ethLoggingComponent::Ctx[];
+constexpr char ethLoggingComponent::Description[];
 } // namespace dds
 } // namespace iox

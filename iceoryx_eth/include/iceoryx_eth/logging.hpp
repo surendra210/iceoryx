@@ -17,45 +17,5 @@
 
 #include "iceoryx_utils/log/logging_free_function_building_block.hpp"
 
-//namespace iox
-// {
-// namespace dds
-// {
-// struct DDSLoggingComponent
-// {
-//     static constexpr char Ctx[] = "DDS";
-//     static constexpr char Description[] = "Log context of the DDS module.";
-// };
-
-// static constexpr auto LogFatal = iox::log::ffbb::LogFatal<DDSLoggingComponent>;
-// static constexpr auto LogError = iox::log::ffbb::LogError<DDSLoggingComponent>;
-// static constexpr auto LogWarn = iox::log::ffbb::LogWarn<DDSLoggingComponent>;
-// static constexpr auto LogInfo = iox::log::ffbb::LogInfo<DDSLoggingComponent>;
-// static constexpr auto LogDebug = iox::log::ffbb::LogDebug<DDSLoggingComponent>;
-// static constexpr auto LogVerbose = iox::log::ffbb::LogVerbose<DDSLoggingComponent>;
-
-// } // namespace dds
-// } // namespace iox
-
-namespace iox
-{
-namespace ipcf
-{
-struct DDSLoggingComponent
-{
-    static constexpr char Ctx[] = "DDS";
-    static constexpr char Description[] = "Log context of the DDS module.";
-};
-
-static constexpr auto LogFatal = iox::log::ffbb::LogFatal<DDSLoggingComponent>;
-static constexpr auto LogError = iox::log::ffbb::LogError<DDSLoggingComponent>;
-static constexpr auto LogWarn = iox::log::ffbb::LogWarn<DDSLoggingComponent>;
-static constexpr auto LogInfo = iox::log::ffbb::LogInfo<DDSLoggingComponent>;
-static constexpr auto LogDebug = iox::log::ffbb::LogDebug<DDSLoggingComponent>;
-static constexpr auto LogVerbose = iox::log::ffbb::LogVerbose<DDSLoggingComponent>;
-
-} // namespace dds
-} // namespace iox
-
 
 #endif // IOX_DDS_LOG_LOGGING_HPP
